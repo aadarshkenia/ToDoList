@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Calender Quickstart</string>
+    <string name="calender_event_display">Display Calender Events</string>
+    <string name="data_retrieval">Retrieving data...</string>
+    <string name="status_text">status</string>
+    <string name="result_text">result</string>
+    <string name="add_default_event">Add default event</string>
+    <string name="title_activity_add_event">AddEvent</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="pick_time">Select Time</string>
+    <string name="pick_date">Select Date</string>
+    <string name="edit_title">Title</string>
+    <string name="edit_location">Location</string>
+    <string name="edit_description">Description</string>
+</resources>
