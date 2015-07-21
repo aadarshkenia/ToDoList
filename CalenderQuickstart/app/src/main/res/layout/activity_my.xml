@@ -3,6 +3,33 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/today_text"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="10dp"
+            android:textSize="20dp"/>
+
+        <ImageButton
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/add_button"
+            android:layout_margin="5dp"
+            android:onClick="addEvent"/>
+        <ImageButton
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/evernote_button"
+            android:layout_margin="5dp"
+            android:onClick="addEvent"/>
+
+    </LinearLayout>
+
+
     <TextView
         android:id="@+id/status_text"
         android:layout_width="wrap_content"
@@ -17,11 +44,12 @@
         android:padding="16dp"
         android:scrollbars="vertical"/>
 
-    <Button
+    <ListView
+        android:id="@+id/list"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_default_event"
-        android:onClick="addEvent"/>
+        android:layout_height="wrap_content">
+
+    </ListView>
 
 
 

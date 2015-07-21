@@ -1,5 +1,6 @@
 package com.example.calenderquickstart;
 
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -9,44 +10,58 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.ExponentialBackOff;
-
-
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.google.gson.Gson;
 
 import android.accounts.AccountManager;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.os.Handler;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
+
+    private Context context=null;
     /**
      * A Google Calendar API service object used to access the API.
      * Note: Do not confuse this class with API library's model classes, which
      * represent specific data structures.
      */
     com.google.api.services.calendar.Calendar mService;
-
     GoogleAccountCredential credential;
     private TextView mStatusText;
     private TextView mResultsText;
@@ -59,6 +74,9 @@ public class MainActivity extends Activity {
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { CalendarScopes.CALENDAR };
 
+    private int syncInterval = 5000;
+    private Handler handler = null;
+
     /**
      * Create the main activity.
      * @param savedInstanceState previously saved instance data.
@@ -66,10 +84,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my);
+
+        context = this;
+        TextView mTodayText = (TextView) findViewById(R.id.today_text);
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("E, MMM-dd", Locale.US);
+        mTodayText.setText(sdf.format(cal.getTime()));
+
         mStatusText = (TextView)findViewById(R.id.status_text);
         mResultsText = (TextView)findViewById(R.id.result_text);
-
-        setContentView(R.layout.activity_my);
 
         // Initialize credentials and service object.
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
@@ -82,12 +106,29 @@ public class MainActivity extends Activity {
                 transport, jsonFactory, credential)
                 .setApplicationName("Google Calendar API Android Quickstart")
                 .build();
+
+        //Set service object in singleton class
+        SingletonUserSettings userSettings = SingletonUserSettings.getInstance();
+        userSettings.setServiceObject(mService);
+
+        //Format Action Bar
+        ActionBar actionBar = getActionBar();
+        formatActionBar(actionBar);
+
+        //Temporary: Remove later
+        EventReaderDb dbhelper= new EventReaderDb(this);
+        SQLiteDatabase db = dbhelper.getWritableDatabase();
+        db.execSQL(EventReaderContract.getDeleteTableSyntax());
+        db.execSQL(EventReaderContract.getCreateTableSyntax());
+
+        /*
+        //Setup Handler and syncing with Google Calendar
+        handler = new Handler();
+        startSyncProcess();
+        */
     }
 
-    /**
-     * Called whenever this activity is pushed to the foreground, such as after
-     * a call to onCreate().
-     */
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -163,6 +204,14 @@ public class MainActivity extends Activity {
                 mStatusText.setText("No network connection available.");
             }
         }
+
+        /*
+        //Show quickevents from DB
+        ArrayList<String> allEvents = MyUtility.getDbEvents(this);
+        ListView lv = (ListView) findViewById(R.id.list);
+        ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allEvents);
+        lv.setAdapter(arrayAdapter);
+        */
     }
 
     /**
@@ -276,20 +325,53 @@ public class MainActivity extends Activity {
         });
     }
 
-    //OLD
-    /*
-    public void addDefaultEvent(View view)
-    {
-        new AddEventAsyncTask(this).execute();
-
-    }
-    */
-
     public void addEvent(View v)
     {
         Intent intent = new Intent(this, AddEvent.class);
         startActivity(intent);
     }
+
+    public void formatActionBar(ActionBar actionBar)
+    {
+        actionBar.setTitle(getString(R.string.today));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
+    }
+
+
+
+    /*
+    Runnable syncFromCalendar = new Runnable() {
+        @Override
+        public void run() {
+
+            try{
+                //Get Calendar events and update UI
+                ArrayList<String> cal_events = (ArrayList<String>)MyUtility.getDataFromApi(mService);
+                //Show quickevents from DB
+                //ArrayList<String> allEvents = MyUtility.getDbEvents(context);
+
+                ListView lv = (ListView) findViewById(R.id.list);
+                ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, cal_events);
+                lv.setAdapter(arrayAdapter);
+                handler.postDelayed(syncFromCalendar, syncInterval);
+            } catch (IOException e)
+            {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    };
+
+    public void startSyncProcess()
+    {
+        syncFromCalendar.run();
+    }
+
+    public void stopSyncProcess()
+    {
+        handler.removeCallbacks(syncFromCalendar);
+    }
+    */
 
 }//end of MainActivity class
 

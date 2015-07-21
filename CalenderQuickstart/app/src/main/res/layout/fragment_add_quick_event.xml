@@ -1,0 +1,78 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.calenderquickstart.AddQuickEventFragment">
+
+    <EditText
+        android:id="@+id/edit_quicktitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/edit_title"
+        android:layout_margin="20dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:text="@string/select_priority"/>
+
+        <Spinner
+            android:id="@+id/spinner_quickpriority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/highlighted_text_material_light"
+            android:drawSelectorOnTop="true"
+            android:layout_marginLeft="15dp"
+            android:entries="@array/priorities_array">
+        </Spinner>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_quickevent_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="@string/pick_start_time_opt"
+        android:textSize="18dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="20dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reminder"
+            android:textSize="20dp"
+            android:textStyle="bold"/>
+
+
+        <CheckBox
+            android:id="@+id/checkbox_quickalarm_reminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/reminder_alarm"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/submit_quick_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        android:text="@string/event_submit"/>
+
+</LinearLayout>
