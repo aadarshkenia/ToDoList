@@ -58,9 +58,9 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
 
     @Override
     protected void onPostExecute(ArrayList<String> result) {
-        ListView lv = (ListView) mActivity.findViewById(R.id.list);
-        ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(mActivity, android.R.layout.simple_list_item_1, result);
-        lv.setAdapter(arrayAdapter);
+        //ListView lv = (ListView) mActivity.findViewById(R.id.list);
+        //ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(mActivity, android.R.layout.simple_list_item_1, result);
+        //lv.setAdapter(arrayAdapter);
     }
 
     /**

@@ -1,15 +1,14 @@
 package com.example.calenderquickstart;
 
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 /**
- * Created by aadarsh-ubuntu on 7/18/15.
+ * Created by aadarsh-ubuntu on 7/24/15.
  */
-
-//DB related operations :  May contain many tables, right now just EVENTS table
 public class EventReaderDb extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;
@@ -21,7 +20,6 @@ public class EventReaderDb extends SQLiteOpenHelper {
 
     //This is where the creation of tables and the initial population of the tables should happen.
     public void onCreate(SQLiteDatabase db) {
-        System.out.println("IN DB ON CREATE");
         db.execSQL(EventReaderContract.getDeleteTableSyntax());
         db.execSQL(EventReaderContract.getCreateTableSyntax());
     }

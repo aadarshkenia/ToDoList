@@ -205,13 +205,16 @@ public class MainActivity extends Activity {
             }
         }
 
-        /*
         //Show quickevents from DB
         ArrayList<String> allEvents = MyUtility.getDbEvents(this);
+        System.out.println("HERE IN REFRESH: "+allEvents.size());
+        for(int i=0;i<allEvents.size();i++)
+            System.out.println((String)allEvents.get(i));
+
         ListView lv = (ListView) findViewById(R.id.list);
         ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allEvents);
         lv.setAdapter(arrayAdapter);
-        */
+
     }
 
     /**
@@ -339,26 +342,21 @@ public class MainActivity extends Activity {
 
 
 
-    /*
+
     Runnable syncFromCalendar = new Runnable() {
         @Override
         public void run() {
 
-            try{
                 //Get Calendar events and update UI
-                ArrayList<String> cal_events = (ArrayList<String>)MyUtility.getDataFromApi(mService);
+                //ArrayList<String> cal_events = (ArrayList<String>)MyUtility.getDataFromApi(mService);
                 //Show quickevents from DB
                 //ArrayList<String> allEvents = MyUtility.getDbEvents(context);
-
+                /*
                 ListView lv = (ListView) findViewById(R.id.list);
                 ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, cal_events);
                 lv.setAdapter(arrayAdapter);
                 handler.postDelayed(syncFromCalendar, syncInterval);
-            } catch (IOException e)
-            {
-                System.out.println(e.getMessage());
-                e.printStackTrace();
-            }
+                */
         }
     };
 
@@ -371,7 +369,7 @@ public class MainActivity extends Activity {
     {
         handler.removeCallbacks(syncFromCalendar);
     }
-    */
+
 
 }//end of MainActivity class
 

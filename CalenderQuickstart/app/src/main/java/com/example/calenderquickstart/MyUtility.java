@@ -79,6 +79,7 @@ public class MyUtility {
         event_d.clear(java.util.Calendar.MILLISECOND);
         long current_date = event_d.getTimeInMillis();
 
+
         //ADD EVENTS WITH NON ZERO START TIME
         String selection =  EventReaderContract.EventEntry.COLUMN_NAME_DATE+" =? AND "+
                 EventReaderContract.EventEntry.COLUMN_NAME_START + " <>?";
@@ -86,8 +87,8 @@ public class MyUtility {
         String sortorder = EventReaderContract.EventEntry.COLUMN_NAME_START;
         Cursor c = db.query(EventReaderContract.EventEntry.TABLE_NAME,
                 projection,
-                selection,
-                selection_args,
+                null,
+                null,
                 null,
                 null,
                 sortorder
@@ -100,14 +101,15 @@ public class MyUtility {
             allEvents.add(title);
         }
 
+    /*
         //ADD EVENTS WITH ZERO START TIME
         selection = EventReaderContract.EventEntry.COLUMN_NAME_DATE+" =? AND "+
                 EventReaderContract.EventEntry.COLUMN_NAME_START + " ==?";
 
         c = db.query(EventReaderContract.EventEntry.TABLE_NAME,
                 projection,
-                selection,
-                selection_args,
+                null,
+                null,
                 null,
                 null,
                 sortorder
@@ -119,7 +121,7 @@ public class MyUtility {
             String title = c.getString(title_col_index);
             allEvents.add(title);
         }
-
+*/
 
         return allEvents;
     }
