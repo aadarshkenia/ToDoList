@@ -22,6 +22,7 @@
     <string name="today">Today</string>
     <string name="user_settings"></string>
     <string name="actionbar_add_event">ADD AN EVENT</string>
+    <string name="label_login">LOGIN</string>
 
     <string-array name="priorities_array">
         <item>High</item>

@@ -1,6 +1,7 @@
 package com.example.calenderquickstart;
 
 
+import com.evernote.client.android.EvernoteSession;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -77,6 +78,11 @@ public class MainActivity extends Activity {
     private int syncInterval = 5000;
     private Handler handler = null;
 
+    //Evernote
+    String consumerKey=null, consumerSecret=null;
+    private static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
+
+
     /**
      * Create the main activity.
      * @param savedInstanceState previously saved instance data.
@@ -126,6 +132,24 @@ public class MainActivity extends Activity {
         handler = new Handler();
         startSyncProcess();
         */
+
+
+        //For evernote
+        consumerKey = BuildConfig.EVERNOTE_CONSUMER_KEY;
+        consumerSecret=BuildConfig.EVERNOTE_CONSUMER_SECRET;
+        //Set up the Evernote singleton session, use EvernoteSession.getInstance() later
+        new EvernoteSession.Builder(this)
+                .setEvernoteService(EVERNOTE_SERVICE)
+                .build(consumerKey, consumerSecret)
+                .asSingleton();
+        boolean loggedIn = EvernoteSession.getInstance().isLoggedIn();
+        System.out.println("BOOLEAN: "+loggedIn);
+        if (!loggedIn) {
+            System.out.println("Went here");
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+
+
     }
 
 

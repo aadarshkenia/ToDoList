@@ -32,6 +32,13 @@
             android:name=".AddEvent"
             android:label="@string/title_activity_add_event" >
         </activity>
+
+        <activity android:name=".LoginActivity"
+            android:label="@string/label_login"
+            android:theme="@style/Theme.Demo" >
+
+        </activity>
+
     </application>
 
 </manifest>
