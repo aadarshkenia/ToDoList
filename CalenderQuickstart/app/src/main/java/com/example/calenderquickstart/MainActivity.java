@@ -2,6 +2,9 @@ package com.example.calenderquickstart;
 
 
 import com.evernote.client.android.EvernoteSession;
+import com.evernote.client.android.asyncclient.EvernoteCallback;
+import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
+import com.evernote.edam.type.Notebook;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -46,6 +49,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.os.Handler;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -143,12 +147,11 @@ public class MainActivity extends Activity {
                 .build(consumerKey, consumerSecret)
                 .asSingleton();
         boolean loggedIn = EvernoteSession.getInstance().isLoggedIn();
-        System.out.println("BOOLEAN: "+loggedIn);
         if (!loggedIn) {
-            System.out.println("Went here");
             startActivity(new Intent(this, LoginActivity.class));
         }
 
+        new FetchNotebooksAsyncTask(this).execute();
 
     }
 
@@ -159,7 +162,7 @@ public class MainActivity extends Activity {
         mStatusText = (TextView)findViewById(R.id.status_text);
         mResultsText = (TextView)findViewById(R.id.result_text);
         if (isGooglePlayServicesAvailable()) {
-            refreshResults();
+            //refreshResults();
         } else {
             mStatusText.setText("Google Play Services required: " +
                     "after installing, close and relaunch this app.");
