@@ -88,7 +88,7 @@ public class FetchNotebooksAsyncTask extends AsyncTask<Void, Void, ArrayList<Str
             System.out.println("NO NOTES TO SHOW");
         else
         {
-            MyUtility.displayItems(mActivity, R.id.list_evernote, result);
+            MyUtility.displayItems(mActivity, R.id.list_evernote, result, MyUtility.event_evernote);
         }
     }
 }

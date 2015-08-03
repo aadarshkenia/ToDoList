@@ -26,8 +26,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.os.Handler;
 
@@ -178,9 +176,9 @@ public class MainActivity extends Activity {
 
     }
 
-    //Update list view on main activity with events in db
+    //Update list view on main activity with local events in db
     public void displayQuickEvents(){
-       MyUtility.displayItems(this, R.id.list_quick, MyUtility.getDbEvents(this));
+       MyUtility.displayItems(this, R.id.list_quick, MyUtility.getDbEvents(this), MyUtility.event_local);
     }
 
     /**

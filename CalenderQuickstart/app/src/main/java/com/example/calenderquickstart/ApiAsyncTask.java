@@ -99,7 +99,7 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
 
     @Override
     protected void onPostExecute(ArrayList<String> result) {
-        MyUtility.displayItems(mActivity, R.id.list_google_cal, result);
+        MyUtility.displayItems(mActivity, R.id.list_google_cal, result, MyUtility.event_calendar);
     }
 
 

@@ -32,6 +32,11 @@ import java.util.List;
 
 public class MyUtility {
 
+    //Event types
+    static final int event_local = 1;
+    static final int event_calendar = 2;
+    static final int event_evernote = 3;
+
     private static HashMap<String, Integer> priority_mappings = new HashMap<String, Integer>();
     static {
         priority_mappings.put("HIGH", 1);
@@ -110,10 +115,10 @@ public class MyUtility {
     }
 
     //Display items on listview with array adapter
-    public static void displayItems(Activity mActivity, int listview_id, ArrayList<String> result){
+    public static void displayItems(Activity mActivity, int listview_id, ArrayList<String> result, int event_type){
 
         ListView lv = (ListView) mActivity.findViewById(listview_id);
-        ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(mActivity, R.layout.my_listlayout, R.id.list_item, result);
+        MyAdapter arrayAdapter= new MyAdapter(mActivity, R.layout.my_listlayout, result, event_type);
         lv.setAdapter(arrayAdapter);
     }
 
