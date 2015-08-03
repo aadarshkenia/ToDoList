@@ -2,9 +2,6 @@ package com.example.calenderquickstart;
 
 
 import com.evernote.client.android.EvernoteSession;
-import com.evernote.client.android.asyncclient.EvernoteCallback;
-import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
-import com.evernote.edam.type.Notebook;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -12,13 +9,8 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.Calendar;
-import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
-import com.google.gson.Gson;
 
 import android.accounts.AccountManager;
 import android.app.ActionBar;
@@ -27,29 +19,17 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CursorAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.os.Handler;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -102,8 +82,6 @@ public class MainActivity extends Activity {
         SimpleDateFormat sdf = new SimpleDateFormat("E, MMM-dd", Locale.US);
         mTodayText.setText(sdf.format(cal.getTime()));
 
-        mStatusText = (TextView)findViewById(R.id.status_text);
-        mResultsText = (TextView)findViewById(R.id.result_text);
 
         // Initialize credentials and service object.
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
@@ -131,27 +109,9 @@ public class MainActivity extends Activity {
         db.execSQL(EventReaderContract.getDeleteTableSyntax());
         db.execSQL(EventReaderContract.getCreateTableSyntax());
 
-        /*
-        //Setup Handler and syncing with Google Calendar
-        handler = new Handler();
-        startSyncProcess();
-        */
-
-
-        //For evernote
-        consumerKey = BuildConfig.EVERNOTE_CONSUMER_KEY;
-        consumerSecret=BuildConfig.EVERNOTE_CONSUMER_SECRET;
-        //Set up the Evernote singleton session, use EvernoteSession.getInstance() later
-        new EvernoteSession.Builder(this)
-                .setEvernoteService(EVERNOTE_SERVICE)
-                .build(consumerKey, consumerSecret)
-                .asSingleton();
-        boolean loggedIn = EvernoteSession.getInstance().isLoggedIn();
-        if (!loggedIn) {
-            startActivity(new Intent(this, LoginActivity.class));
-        }
-
-        new FetchNotebooksAsyncTask(this).execute();
+        //For evernote initialization
+        initializeEvernoteDetails();
+        refreshResults();
 
     }
 
@@ -159,26 +119,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        mStatusText = (TextView)findViewById(R.id.status_text);
-        mResultsText = (TextView)findViewById(R.id.result_text);
-        if (isGooglePlayServicesAvailable()) {
-            //refreshResults();
-        } else {
-            mStatusText.setText("Google Play Services required: " +
-                    "after installing, close and relaunch this app.");
-        }
+        refreshResults();
     }
 
-    /**
-     * Called when an activity launched here (specifically, AccountPicker
-     * and authorization) exits, giving you the requestCode you started it with,
-     * the resultCode it returned, and any additional data from it.
-     * @param requestCode code indicating which activity result is incoming.
-     * @param resultCode code indicating the result of the incoming
-     *     activity result.
-     * @param data Intent (containing result data) returned by incoming
-     *     activity result.
-     */
+
     @Override
     protected void onActivityResult(
             int requestCode, int resultCode, Intent data) {
@@ -227,73 +171,16 @@ public class MainActivity extends Activity {
         } else {
             if (isDeviceOnline()) {
                 new ApiAsyncTask(this).execute();
-            } else {
-                mStatusText.setText("No network connection available.");
+                new FetchNotebooksAsyncTask(this).execute();
+                displayQuickEvents();
             }
         }
 
-        //Show quickevents from DB
-        ArrayList<String> allEvents = MyUtility.getDbEvents(this);
-        System.out.println("HERE IN REFRESH: "+allEvents.size());
-        for(int i=0;i<allEvents.size();i++)
-            System.out.println((String)allEvents.get(i));
-
-        ListView lv = (ListView) findViewById(R.id.list);
-        ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allEvents);
-        lv.setAdapter(arrayAdapter);
-
     }
 
-    /**
-     * Clear any existing Google Calendar API data from the TextView and update
-     * the header message; called from background threads and async tasks
-     * that need to update the UI (in the UI thread).
-     */
-    public void clearResultsText() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mStatusText.setText("Retrieving data…");
-                mResultsText.setText("");
-            }
-        });
-    }
-
-    /**
-     * Fill the data TextView with the given List of Strings; called from
-     * background threads and async tasks that need to update the UI (in the
-     * UI thread).
-     * @param dataStrings a List of Strings to populate the main TextView with.
-     */
-    public void updateResultsText(final List<String> dataStrings) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (dataStrings == null) {
-                    mStatusText.setText("Error retrieving data!");
-                } else if (dataStrings.size() == 0) {
-                    mStatusText.setText("No data found.");
-                } else {
-                    mStatusText.setText("Data retrieved using" +
-                            " the Google Calendar API:");
-                    mResultsText.setText(TextUtils.join("\n\n", dataStrings));
-                }
-            }
-        });
-    }
-
-    /**
-     * Show a status message in the list header TextView; called from background
-     * threads and async tasks that need to update the UI (in the UI thread).
-     * @param message a String to display in the UI header TextView.
-     */
-    public void updateStatus(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mStatusText.setText(message);
-            }
-        });
+    //Update list view on main activity with events in db
+    public void displayQuickEvents(){
+       MyUtility.displayItems(this, R.id.list_quick, MyUtility.getDbEvents(this));
     }
 
     /**
@@ -355,6 +242,22 @@ public class MainActivity extends Activity {
         });
     }
 
+    //Initialize Evernote credentials
+    public void initializeEvernoteDetails(){
+        consumerKey = BuildConfig.EVERNOTE_CONSUMER_KEY;
+        consumerSecret=BuildConfig.EVERNOTE_CONSUMER_SECRET;
+        //Set up the Evernote singleton session, use EvernoteSession.getInstance() later
+        new EvernoteSession.Builder(this)
+                .setEvernoteService(EVERNOTE_SERVICE)
+                .build(consumerKey, consumerSecret)
+                .asSingleton();
+        boolean loggedIn = EvernoteSession.getInstance().isLoggedIn();
+        if (!loggedIn) {
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+    }
+
+    //On click listener for Add event button
     public void addEvent(View v)
     {
         Intent intent = new Intent(this, AddEvent.class);
@@ -365,36 +268,6 @@ public class MainActivity extends Activity {
     {
         actionBar.setTitle(getString(R.string.today));
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
-    }
-
-
-
-
-    Runnable syncFromCalendar = new Runnable() {
-        @Override
-        public void run() {
-
-                //Get Calendar events and update UI
-                //ArrayList<String> cal_events = (ArrayList<String>)MyUtility.getDataFromApi(mService);
-                //Show quickevents from DB
-                //ArrayList<String> allEvents = MyUtility.getDbEvents(context);
-                /*
-                ListView lv = (ListView) findViewById(R.id.list);
-                ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, cal_events);
-                lv.setAdapter(arrayAdapter);
-                handler.postDelayed(syncFromCalendar, syncInterval);
-                */
-        }
-    };
-
-    public void startSyncProcess()
-    {
-        syncFromCalendar.run();
-    }
-
-    public void stopSyncProcess()
-    {
-        handler.removeCallbacks(syncFromCalendar);
     }
 
 

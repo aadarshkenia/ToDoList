@@ -1,8 +1,10 @@
 package com.example.calenderquickstart;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
@@ -36,7 +38,6 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
     @Override
     protected ArrayList<String> doInBackground(Void... params) {
         try {
-            mActivity.clearResultsText();
             return (ArrayList<String>)getDataFromApi();
             //mActivity.updateResultsText(getDataFromApi());
 
@@ -50,18 +51,13 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
                     MainActivity.REQUEST_AUTHORIZATION);
 
         } catch (Exception e) {
-            mActivity.updateStatus("The following error occurred:\n" +
-                    e.getMessage());
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
 
-    @Override
-    protected void onPostExecute(ArrayList<String> result) {
-        //ListView lv = (ListView) mActivity.findViewById(R.id.list);
-        //ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(mActivity, android.R.layout.simple_list_item_1, result);
-        //lv.setAdapter(arrayAdapter);
-    }
+
 
     /**
      * Fetch a list of the next 10 events from the primary calendar.
@@ -101,6 +97,10 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
         return eventStrings;
     }
 
+    @Override
+    protected void onPostExecute(ArrayList<String> result) {
+        MyUtility.displayItems(mActivity, R.id.list_google_cal, result);
+    }
 
 
 }

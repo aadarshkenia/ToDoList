@@ -1,8 +1,13 @@
 package com.example.calenderquickstart;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
@@ -101,32 +106,16 @@ public class MyUtility {
             allEvents.add(title);
         }
 
-    /*
-        //ADD EVENTS WITH ZERO START TIME
-        selection = EventReaderContract.EventEntry.COLUMN_NAME_DATE+" =? AND "+
-                EventReaderContract.EventEntry.COLUMN_NAME_START + " ==?";
-
-        c = db.query(EventReaderContract.EventEntry.TABLE_NAME,
-                projection,
-                null,
-                null,
-                null,
-                null,
-                sortorder
-        );
-        c.moveToFirst();
-        title_col_index=c.getColumnIndex(EventReaderContract.EventEntry.COLUMN_NAME_TITLE);
-        while(c.moveToNext())
-        {
-            String title = c.getString(title_col_index);
-            allEvents.add(title);
-        }
-*/
-
         return allEvents;
     }
 
+    //Display items on listview with array adapter
+    public static void displayItems(Activity mActivity, int listview_id, ArrayList<String> result){
 
+        ListView lv = (ListView) mActivity.findViewById(listview_id);
+        ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(mActivity, R.layout.my_listlayout, R.id.list_item, result);
+        lv.setAdapter(arrayAdapter);
+    }
 
 
 }

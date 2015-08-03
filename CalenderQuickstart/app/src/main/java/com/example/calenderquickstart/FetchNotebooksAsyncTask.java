@@ -1,8 +1,10 @@
 package com.example.calenderquickstart;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
@@ -86,9 +88,7 @@ public class FetchNotebooksAsyncTask extends AsyncTask<Void, Void, ArrayList<Str
             System.out.println("NO NOTES TO SHOW");
         else
         {
-            ListView lv = (ListView) mActivity.findViewById(R.id.list);
-            ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(mActivity, android.R.layout.simple_list_item_1, result);
-            lv.setAdapter(arrayAdapter);
+            MyUtility.displayItems(mActivity, R.id.list_evernote, result);
         }
     }
 }

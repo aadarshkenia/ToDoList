@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/grey_background">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -20,37 +21,27 @@
             android:background="@drawable/add_button"
             android:layout_margin="5dp"
             android:onClick="addEvent"/>
-        <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:background="@drawable/evernote_button"
-            android:layout_margin="5dp"
-            android:onClick="addEvent"/>
 
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/status_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:text="@string/data_retrieval"/>
-
-    <TextView
-        android:id="@+id/result_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:scrollbars="vertical"/>
-
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/list_quick"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp">
     </ListView>
 
+    <ListView
+        android:id="@+id/list_google_cal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </ListView>
 
+    <ListView
+        android:id="@+id/list_evernote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#00FF00">
+    </ListView>
 
 </LinearLayout>
