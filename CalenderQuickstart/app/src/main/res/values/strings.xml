@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Calender Quickstart</string>
-    <string name="calender_event_display">Display Calender Events</string>
+    <string name="app_name">Calendar Quickstart</string>
+    <string name="calender_event_display">Display Calendar Events</string>
     <string name="data_retrieval">Retrieving data...</string>
     <string name="status_text">status</string>
     <string name="result_text">result</string>
